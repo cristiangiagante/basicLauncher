@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Launcher;
+using System;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Windows;
-using Launcher;
 
 namespace CrcGenerator
 {

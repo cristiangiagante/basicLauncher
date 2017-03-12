@@ -1,5 +1,5 @@
-﻿using System;
-using Launcher;
+﻿using Launcher;
+using System;
 
 namespace BasicLauncher
 {
