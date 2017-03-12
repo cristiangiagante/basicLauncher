@@ -12,14 +12,15 @@ namespace Launcher
         public string Checksum { get; }
         public string RutaLocal { get; }
         private Uri RutaRemota { get; }
-        private string rutaInterna { get; }
-        public Archivo(string nombre, string rutaLocal, float espacio, Uri rutaRemota)
+        private string RutaInterna { get; }
+        public Archivo(string nombre, string rutaLocal, float espacio, Uri rutaRemota, string rutaInterna)
         {
             RutaLocal = rutaLocal;
             Nombre = nombre;
             Espacio = espacio;
             RutaRemota = rutaRemota;
-            Checksum = GenerarChecksum();
+            RutaInterna = rutaInterna;
+            Checksum = GenerarChecksum(RutaLocal);
         }
 
         public Archivo(string nombre, string crc, string rutaLocal, Uri rutaCrc)
@@ -35,7 +36,7 @@ namespace Launcher
             RutaLocal = rutaLocal;
             Nombre = nombre;
             Espacio = espacio;
-            Checksum = GenerarChecksum();
+            Checksum = GenerarChecksum(RutaLocal);
         }
 
         public Archivo(string nombre, string crc, string rutaLocal)
@@ -50,8 +51,8 @@ namespace Launcher
             this.Nombre = nombre;
             this.RutaLocal = rutaLocal;
             this.Espacio = espacio;
-            this.rutaInterna = rutaInterna;
-            Checksum = GenerarChecksum();
+            this.RutaInterna = rutaInterna;
+            Checksum = GenerarChecksum(RutaInterna);
         }
 
         private void Borrar()
@@ -78,10 +79,10 @@ namespace Launcher
             }    
         }
 
-        private string GenerarChecksum()
+        private string GenerarChecksum(string ruta)
         {
             
-            using (var lector = new StreamReader(rutaInterna + @"\" + Nombre))
+            using (var lector = new StreamReader(ruta + @"\" + Nombre))
             {
                     var md5Hash = CyberCrypt._MD5.GetMD5Hash(lector.ReadToEnd());
                     return md5Hash;

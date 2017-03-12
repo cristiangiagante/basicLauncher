@@ -11,8 +11,10 @@ namespace Launcher
         public static List<Archivo> ArchivosLocales { get; set; } = new List<Archivo>();
         public static List<Archivo> ArchivosRemotos { get; set; } = new List<Archivo>();
         public Uri RutaCrc { get; }
+        private string CurrentDirectory { get; set; }
         public Launcher(string ejecutable, string rutaCrc)
         {
+            CurrentDirectory = Environment.CurrentDirectory;
             Informacion.EjecutableMain = ejecutable;
             var rutaCrcUri=new Uri(rutaCrc); //Convierto a URI
             Informacion.RutaCrc = rutaCrcUri;
@@ -45,9 +47,10 @@ namespace Launcher
 
                 foreach (FileInfo file in files)
                 {
-                    if (!file.Name.Equals("Launcher.exe"))
+                    if (!file.Name.Equals("BasicLauncher.exe"))
                     {
-                        var archivo = new Archivo(file.Name, file.DirectoryName, file.Length, RutaCrc);
+                        var rutaRelativa = file.DirectoryName.Replace(CurrentDirectory, ".");
+                        var archivo = new Archivo(file.Name, rutaRelativa+ @"\", file.Length, RutaCrc, file.DirectoryName);
                         ArchivosLocales.Add(archivo);
                     }
                 }
@@ -69,11 +72,19 @@ namespace Launcher
                 if (!crcExiste)
                 {
                     archivoRemoto.Descargar();
+                    Informacion.ArchivosDescargados++;
                 }             
                 Informacion.ArchivosPendientes--;
-                Informacion.ArchivosDescargados++;
-                Informacion.Porcentaje = Informacion.ArchivosDescargados*100/
-                                         (Informacion.ArchivosDescargados + Informacion.ArchivosPendientes);
+                try
+                {
+                    Informacion.Porcentaje = Informacion.ArchivosDescargados * 100 /
+                                                             (Informacion.ArchivosDescargados + Informacion.ArchivosPendientes);
+                }
+                catch
+                {
+                    Informacion.Porcentaje = 0;
+                    Informacion.Error += "Los archivos ya estan actualizados, no es necesario descargarlos.";
+                }
             }
         }
 
