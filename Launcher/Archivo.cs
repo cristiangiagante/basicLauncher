@@ -6,12 +6,13 @@ namespace Launcher
 {
     public class Archivo
     {
+
         public string Nombre { get; }
         public float Espacio { get; }
         public string Checksum { get; }
         public string RutaLocal { get; }
         private Uri RutaRemota { get; }
-
+        private string rutaInterna { get; }
         public Archivo(string nombre, string rutaLocal, float espacio, Uri rutaRemota)
         {
             RutaLocal = rutaLocal;
@@ -44,6 +45,15 @@ namespace Launcher
             RutaLocal = rutaLocal;
         }
 
+        public Archivo(string nombre, string rutaLocal, long espacio, string rutaInterna)
+        {
+            this.Nombre = nombre;
+            this.RutaLocal = rutaLocal;
+            this.Espacio = espacio;
+            this.rutaInterna = rutaInterna;
+            Checksum = GenerarChecksum();
+        }
+
         private void Borrar()
         {
             File.Delete(this.Nombre);
@@ -64,14 +74,14 @@ namespace Launcher
             }
             catch (Exception e)
             {
-                Informacion.Error += $"Error en la descarga de archivos: {e.Message} En el archivo: {Nombre}" + Environment.NewLine;
+                Informacion.Error += $"Error en la descarga de archivos: {e.Message} En el archivo: {Nombre}" + Environment.NewLine + $"Detalles: {e.InnerException.Message}" + Environment.NewLine;
             }    
         }
 
         private string GenerarChecksum()
         {
             
-            using (var lector = new StreamReader(RutaLocal + @"\" + Nombre))
+            using (var lector = new StreamReader(rutaInterna + @"\" + Nombre))
             {
                     var md5Hash = CyberCrypt._MD5.GetMD5Hash(lector.ReadToEnd());
                     return md5Hash;

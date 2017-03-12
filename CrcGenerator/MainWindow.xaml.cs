@@ -18,23 +18,16 @@ namespace CrcGenerator
 
         private void Window_Drop(object sender, DragEventArgs e)
         {
-            var archivosValidos = e.Data.GetDataPresent(DataFormats.FileDrop,true);
+            var archivosValidos = e.Data.GetDataPresent(DataFormats.FileDrop, true);
             if (archivosValidos)
             {
                 try
                 {
                     var crc = File.CreateText("BasicLauncher.crc");
                     StringBuilder contenidoCrc = new StringBuilder();
-                    var carpeta = (string[]) e.Data.GetData(DataFormats.FileDrop);
+                    var carpeta = (string[])e.Data.GetData(DataFormats.FileDrop);
                     DirectoryInfo dir = new DirectoryInfo(carpeta[0]);
-                    foreach (var file in dir.GetFiles())
-                    {
-                        if (!file.Name.Equals("Launcher.exe"))
-                        {
-                            var archivo = new Archivo(file.Name, file.DirectoryName, file.Length);
-                            contenidoCrc.AppendLine($"{archivo.Nombre} * {archivo.Checksum} * {archivo.RutaLocal}");
-                        }
-                    }
+                    CreateCrcFile(dir, contenidoCrc);
                     crc.WriteLine(contenidoCrc);
                     crc.Close();
                     contenidoCrc.Clear();
@@ -43,7 +36,48 @@ namespace CrcGenerator
                 {
                     MessageBox.Show($"Error encontrado: No se puede encontrar la carpeta.");
                 }
-                
+
+            }
+        }
+        
+        private void CreateCrcFile(DirectoryInfo rootDir, StringBuilder contenidoCrc)
+        {
+            //Agrego al crc los archivos del root path
+            FindFilesOnFolder(rootDir, contenidoCrc, "Launcher.exe");
+            //Busco en las subcarpetas de forma recursiva
+            FindSubfolders(rootDir, contenidoCrc);
+        }
+        private void FindSubfolders(DirectoryInfo rootDir, StringBuilder contenidoCrc)
+        {
+            var directorios = rootDir.GetDirectories();
+
+            foreach (var subdir in directorios)
+            {
+                FindFilesOnFolder(subdir, contenidoCrc);
+                FindSubfolders(subdir, contenidoCrc);
+            }
+        }
+
+        private void FindFilesOnFolder(DirectoryInfo dir, StringBuilder contenidoCrc)
+        {
+            foreach (var file in dir.GetFiles())
+            {
+                Environment.CurrentDirectory = dir.Parent.FullName;
+                var relativePath = file.DirectoryName.Replace(Environment.CurrentDirectory, ".");
+                var archivo = new Archivo(file.Name, relativePath + @"\", file.Length, file.DirectoryName);
+                contenidoCrc.AppendLine($"{archivo.Nombre} * {archivo.Checksum} * {archivo.RutaLocal}");
+            }
+        }
+
+        private void FindFilesOnFolder(DirectoryInfo dir, StringBuilder contenidoCrc, string exceptionFile)
+        {
+            foreach (var file in dir.GetFiles())
+            {
+                if (!file.Name.Equals(exceptionFile))
+                {
+                    var archivo = new Archivo(file.Name, @".\", file.Length, file.DirectoryName);
+                    contenidoCrc.AppendLine($"{archivo.Nombre} * {archivo.Checksum} * {archivo.RutaLocal}");
+                }
             }
         }
     }
