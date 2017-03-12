@@ -1,0 +1,24 @@
+﻿<Window x:Class="CrcGenerator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CrcGenerator"
+        mc:Ignorable="d"
+        Title="BasicLauncher Crc Generator" Height="350" Width="525" ResizeMode="NoResize"  AllowDrop="True" Drop="Window_Drop">
+    <Grid>
+        <Label x:Name="indicaciones" Content="Arrastre aqui la carpeta con los archivos de actualizacion" HorizontalAlignment="Left" Margin="31,20,0,0" VerticalAlignment="Top" FontSize="18">
+            <Label.Effect>
+                <DropShadowEffect Color="#FF009299"/>
+            </Label.Effect>
+        </Label>
+        <Label x:Name="indicaciones_eng" Content="Drop here the folder with your update files" HorizontalAlignment="Left" Margin="83,86,0,0" VerticalAlignment="Top" FontSize="18">
+            <Label.Effect>
+                <DropShadowEffect Color="#FF009299"/>
+            </Label.Effect>
+        </Label>
+        <Image x:Name="ArrowImg" Margin="31,148,272,10" Source="img/arrow.png" Stretch="Fill"/>
+        <Image x:Name="FolderImg" Margin="263,148,19,10" Source="img/folder.png" Stretch="Fill"/>
+
+    </Grid>
+</Window>
