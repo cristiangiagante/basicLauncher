@@ -5,11 +5,11 @@ using System.Net;
 
 namespace Launcher
 {
-    public class LauncherCustoms
+    public class LauncherCustoms //(Personalizaciones disponibles: Ninguna)
     {
 
     }
-    public class ArchivoCustoms
+    public class ArchivoCustoms //(Personalizaciones disponibles: Descarga de archivo remoto)
     {
         public string labelSpeed { get; set; }
         public int progressBar { get; set; }
@@ -79,7 +79,7 @@ namespace Launcher
             }
         }
     }
-    public class InformacionCustoms
+    public class InformacionCustoms //(Personalizaciones disponibles: Ninguna)
     {
 
     }

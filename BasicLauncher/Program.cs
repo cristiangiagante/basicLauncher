@@ -7,7 +7,7 @@ namespace BasicLauncher
     {
         static void Main(string[] args)
         {
-            Launcher.Launcher launcher = new Launcher.Launcher("main.exe", "http://muwlauncher.com/basicLauncher/BasicLauncher.crc");
+            Launcher.Launcher launcher = new Launcher.Launcher("main.exe", "http://muwlauncher.com/basicLauncher/BasicLauncher.crc", true);
             Console.WriteLine($"Ejecutable: {Informacion.EjecutableMain + Environment.NewLine}");
             Console.WriteLine($"Pendientes: {Informacion.ArchivosPendientes + Environment.NewLine}");
             Console.WriteLine($"Totales: {Informacion.ArchivosDescargados + Environment.NewLine}");

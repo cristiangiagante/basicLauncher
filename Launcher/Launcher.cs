@@ -8,12 +8,14 @@ namespace Launcher
 {
     public class Launcher:LauncherCustoms
     {
+        private bool Customs { get; }
         public List<Archivo> ArchivosLocales { get; set; } = new List<Archivo>();
         public List<Archivo> ArchivosRemotos { get; set; } = new List<Archivo>();
         public Uri RutaCrc { get; }
         private string CurrentDirectory { get; set; }
-        public Launcher(string ejecutable, string rutaCrc)
+        public Launcher(string ejecutable, string rutaCrc, bool customs)
         {
+            Customs = customs;
             CurrentDirectory = Environment.CurrentDirectory;
             Informacion.EjecutableMain = ejecutable;
             var rutaCrcUri=new Uri(rutaCrc); //Convierto a URI
@@ -32,7 +34,10 @@ namespace Launcher
                 foreach (var linea in contenidoFiltrado)
                 {
                     var lineaPartida = linea.Split(new string[] { " * " }, StringSplitOptions.RemoveEmptyEntries);
-                    var archivo = new Archivo(lineaPartida[0], lineaPartida[1], lineaPartida[2].Replace("\r", ""),RutaCrc);
+                    var archivo = new Archivo(lineaPartida[0], lineaPartida[1], lineaPartida[2].Replace("\r", ""), RutaCrc)
+                    {
+                        CustomDownload = Customs
+                    };
                     ArchivosRemotos.Add(archivo);
                 }
                 Informacion.ArchivosPendientes = ArchivosRemotos.Count();
