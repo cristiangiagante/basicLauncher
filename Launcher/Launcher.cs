@@ -65,10 +65,10 @@ namespace Launcher
                 Informacion.Error += $"Error al obtener informacion local: {eLocal.Message}" + Environment.NewLine;
             }
 
-            VerificarCambios();
+            VerificarCambiosYDescargar();
         }
 
-        private void VerificarCambios()
+        private void VerificarCambiosYDescargar()
         {
             foreach (var archivoRemoto in ArchivosRemotos)
             {
