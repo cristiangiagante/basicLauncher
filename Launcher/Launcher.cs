@@ -6,10 +6,10 @@ using System.Net;
 
 namespace Launcher
 {
-    public class Launcher
+    public class Launcher:LauncherCustoms
     {
-        public static List<Archivo> ArchivosLocales { get; set; } = new List<Archivo>();
-        public static List<Archivo> ArchivosRemotos { get; set; } = new List<Archivo>();
+        public List<Archivo> ArchivosLocales { get; set; } = new List<Archivo>();
+        public List<Archivo> ArchivosRemotos { get; set; } = new List<Archivo>();
         public Uri RutaCrc { get; }
         private string CurrentDirectory { get; set; }
         public Launcher(string ejecutable, string rutaCrc)

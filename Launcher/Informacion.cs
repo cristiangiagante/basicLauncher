@@ -2,7 +2,7 @@
 
 namespace Launcher
 {
-    public abstract class Informacion
+    public abstract class Informacion:InformacionCustoms
     {
         public static int ArchivosPendientes { get; set; }
         public static int ArchivosDescargados { get; set; }

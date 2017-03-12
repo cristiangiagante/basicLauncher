@@ -27,6 +27,7 @@ namespace CrcGenerator
                     StringBuilder contenidoCrc = new StringBuilder();
                     var carpeta = (string[])e.Data.GetData(DataFormats.FileDrop);
                     DirectoryInfo dir = new DirectoryInfo(carpeta[0]);
+                    Environment.CurrentDirectory = dir.FullName;
                     CreateCrcFile(dir, contenidoCrc);
                     crc.WriteLine(contenidoCrc);
                     crc.Close();
@@ -62,7 +63,6 @@ namespace CrcGenerator
         {
             foreach (var file in dir.GetFiles())
             {
-                Environment.CurrentDirectory = dir.Parent.FullName;
                 var relativePath = file.DirectoryName.Replace(Environment.CurrentDirectory, ".");
                 var archivo = new Archivo(file.Name, relativePath + @"\", file.Length, file.DirectoryName);
                 contenidoCrc.AppendLine($"{archivo.Nombre} * {archivo.Checksum} * {archivo.RutaLocal}");

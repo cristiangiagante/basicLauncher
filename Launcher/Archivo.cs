@@ -1,12 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Text;
 
 namespace Launcher
 {
-    public class Archivo
+    public partial class Archivo : ArchivoCustoms
     {
-
+        public bool CustomDownload { get; set; }
         public string Nombre { get; }
         public float Espacio { get; }
         public string Checksum { get; }
@@ -68,10 +69,25 @@ namespace Launcher
                 {
                     File.Delete($@"{RutaLocal}\{Nombre}");
                 }
+                if(!Directory.Exists(RutaLocal))
+                {
+                    Directory.CreateDirectory(RutaLocal);
+                }
                 WebClient wc = new WebClient();
                 var filtroHostCarpeta = RutaRemota.AbsoluteUri.Replace($"http://{RutaRemota.Host}/", "");
                 var carpetaUpdates = filtroHostCarpeta.Replace("/BasicLauncher.crc", "");
-                wc.DownloadFile($"http://{RutaRemota.Host}/{carpetaUpdates}/{Nombre}", $@"{RutaLocal}\{Nombre}");
+                StringBuilder urlOrigen = new StringBuilder();
+                urlOrigen.Append($"http://{RutaRemota.Host}/{carpetaUpdates}/{RutaLocal}/{Nombre}");
+                StringBuilder localizacion = new StringBuilder();
+                localizacion.Append($@"{RutaLocal}\{Nombre}");
+                if(CustomDownload)
+                {
+                    DownloadFile(urlOrigen.ToString(), localizacion.ToString());
+                }
+                else
+                {
+                    wc.DownloadFile(urlOrigen.ToString(), localizacion.ToString());
+                }
             }
             catch (Exception e)
             {
