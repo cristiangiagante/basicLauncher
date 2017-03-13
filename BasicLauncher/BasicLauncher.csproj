@@ -52,6 +52,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CustomsBasicLauncher\CustomsBasicLauncher.csproj">
+      <Project>{2B02846D-B87E-4BE4-B3F3-71A37B02BBCF}</Project>
+      <Name>CustomsBasicLauncher</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Launcher\Launcher.csproj">
       <Project>{a4c678cb-ee2d-4374-a69a-859a562d745f}</Project>
       <Name>Launcher</Name>
