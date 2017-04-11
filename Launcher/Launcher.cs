@@ -6,7 +6,7 @@ using System.Net;
 
 namespace Launcher
 {
-    public class Launcher:LauncherCustoms
+    public class Launcher:Customs
     {
         private bool Customs { get; }
         public List<Archivo> ArchivosLocales { get; set; } = new List<Archivo>();

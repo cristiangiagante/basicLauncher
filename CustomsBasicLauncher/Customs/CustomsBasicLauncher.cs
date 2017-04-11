@@ -5,7 +5,7 @@ using System.Net;
 
 namespace Launcher
 {
-    public class LauncherCustoms //(Personalizaciones disponibles: Ninguna)
+    public class Customs //(Personalizaciones disponibles: Ninguna)
     {
 
     }
