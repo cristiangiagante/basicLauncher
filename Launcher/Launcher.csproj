@@ -47,9 +47,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Archivo.cs" />
-    <Compile Include="Informacion.cs" />
+    <Compile Include="DTO\EjecutableInfo.cs" />
+    <Compile Include="DTO\Informacion.cs" />
     <Compile Include="Launcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Registro.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

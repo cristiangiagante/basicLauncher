@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -13,6 +14,7 @@ namespace Launcher
         public List<Archivo> ArchivosRemotos { get; set; } = new List<Archivo>();
         public Uri RutaCrc { get; }
         private string CurrentDirectory { get; set; }
+        
         public Launcher(string ejecutable, string rutaCrc, bool customs)
         {
             Customs = customs;
@@ -64,14 +66,36 @@ namespace Launcher
             {
                 Informacion.Error += $"Error al obtener informacion local: {eLocal.Message}" + Environment.NewLine;
             }
+            if(Informacion.EjecutarInfo.ActualizarAutomaticamente)
+            {
+                VerificarIntegridadYDescargar();
+            }
         }
 
-        public void VerificarCambiosYDescargar()
+        public bool VerificarIntegridad()
+        {
+            bool validacionCrc = false;
+            foreach (var file in ArchivosRemotos)
+            {
+                if(!file.VerificarIntegridad())
+                {
+                    validacionCrc = false;
+                    break;
+                }
+                else
+                {
+                    validacionCrc = true;
+                }
+            }
+            return validacionCrc;
+        }
+
+        public void VerificarIntegridadYDescargar()
         {
             foreach (var archivoRemoto in ArchivosRemotos)
             {
                 //Si el crc del archivo local no se encuentra entre los remotos
-                var crcExiste = ArchivosLocales.Any(r => r.Checksum == archivoRemoto.Checksum && r.RutaLocal==archivoRemoto.RutaLocal);
+                var crcExiste = ArchivosLocales.Any(l => l.Checksum == archivoRemoto.Checksum && l.RutaLocal==archivoRemoto.RutaLocal);
                 if (!crcExiste)
                 {
                     archivoRemoto.Descargar();
@@ -89,11 +113,41 @@ namespace Launcher
                     Informacion.Error += "Los archivos ya estan actualizados, no es necesario descargarlos.";
                 }
             }
+            if(Informacion.EjecutarInfo.EjecucionAutomaticaAlActualizar)
+            {
+                Ejecutar();
+            }
         }
 
         private void BorrarArchivos(List<string> archivos)
         {
 
+        }
+
+        public void Ejecutar()
+        {
+            try
+            {
+                if(Informacion.EjecutarInfo.VerificarIntegridadAlEjecutar && Informacion.EjecutarInfo.DetenerEjecucionAlVerificarIntegridad)
+                {
+                    Informacion.Actualizado = VerificarIntegridad();
+                }
+                else
+                {
+                    VerificarIntegridadYDescargar();
+                    ProcessStartInfo info = new ProcessStartInfo();
+                    info.CreateNoWindow = true;
+                    info.FileName = Informacion.EjecutableMain;
+                    info.Arguments = String.IsNullOrEmpty(Informacion.EjecutarInfo.Argumentos) ? "" : Informacion.EjecutarInfo.Argumentos;
+                    info.UseShellExecute = false;
+                    Process.Start(info);
+                }
+
+            }
+            catch(Exception e)
+            {
+                Informacion.Error = e.Message;
+            }
         }
     }
 }
