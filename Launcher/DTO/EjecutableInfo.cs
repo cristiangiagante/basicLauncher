@@ -1,6 +1,6 @@
 ﻿namespace Launcher
 {
-    public abstract class EjecutableInfo
+    public class EjecutableInfo
     {
         public bool EjecucionAutomaticaAlActualizar { get; set; } = true;
         public bool VerificarIntegridadAlEjecutar { get; set; } = true;

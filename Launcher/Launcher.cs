@@ -128,13 +128,16 @@ namespace Launcher
         {
             try
             {
-                if(Informacion.EjecutarInfo.VerificarIntegridadAlEjecutar && Informacion.EjecutarInfo.DetenerEjecucionAlVerificarIntegridad)
+                if(Informacion.EjecutarInfo.VerificarIntegridadAlEjecutar)
                 {
                     Informacion.Actualizado = VerificarIntegridad();
                 }
+                if (Informacion.EjecutarInfo.DetenerEjecucionAlVerificarIntegridad && Informacion.Actualizado == false)
+                {
+                    Informacion.Error = "Verificacion CRC no concuerda";
+                }
                 else
                 {
-                    VerificarIntegridadYDescargar();
                     ProcessStartInfo info = new ProcessStartInfo();
                     info.CreateNoWindow = true;
                     info.FileName = Informacion.EjecutableMain;
@@ -142,7 +145,6 @@ namespace Launcher
                     info.UseShellExecute = false;
                     Process.Start(info);
                 }
-
             }
             catch(Exception e)
             {
