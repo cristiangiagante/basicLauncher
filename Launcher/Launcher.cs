@@ -7,32 +7,32 @@ using System.Net;
 
 namespace Launcher
 {
-    public class Launcher:Customs
+    public class Launcher : Customs
     {
         private bool Customs { get; }
         public List<Archivo> ArchivosLocales { get; set; } = new List<Archivo>();
         public List<Archivo> ArchivosRemotos { get; set; } = new List<Archivo>();
         public Uri RutaCrc { get; }
         private string CurrentDirectory { get; set; }
-        
+
         public Launcher(string ejecutable, string rutaCrc, bool customs)
         {
             Customs = customs;
             CurrentDirectory = Environment.CurrentDirectory;
             Informacion.EjecutableMain = ejecutable;
-            var rutaCrcUri=new Uri(rutaCrc); //Convierto a URI
+            var rutaCrcUri = new Uri(rutaCrc); //Convierto a URI
             Informacion.RutaCrc = rutaCrcUri;
             RutaCrc = rutaCrcUri;
             DirectoryInfo dir = new DirectoryInfo(".");
             var files = dir.GetFiles("*.*", SearchOption.AllDirectories);
-            WebClient br=new WebClient();
+            WebClient br = new WebClient();
             var contenidoCrc = br.DownloadString(RutaCrc);
             br.Dispose();
             var contenidoCrcPorLineas = contenidoCrc.Split('\n');
 
             try
             {//Remoto
-                var contenidoFiltrado = contenidoCrcPorLineas.Where(l => l!="\r" && l!=""); //Filtro para caracteres de retorno que produce el Crc Generator al final del archivo
+                var contenidoFiltrado = contenidoCrcPorLineas.Where(l => l != "\r" && l != ""); //Filtro para caracteres de retorno que produce el Crc Generator al final del archivo
                 foreach (var linea in contenidoFiltrado)
                 {
                     var lineaPartida = linea.Split(new string[] { " * " }, StringSplitOptions.RemoveEmptyEntries);
@@ -57,7 +57,7 @@ namespace Launcher
                     if (!file.Name.Equals("BasicLauncher.exe"))
                     {
                         var rutaRelativa = file.DirectoryName.Replace(CurrentDirectory, ".");
-                        var archivo = new Archivo(file.Name, rutaRelativa+ @"\", file.Length, RutaCrc, file.DirectoryName);
+                        var archivo = new Archivo(file.Name, rutaRelativa + @"\", file.Length, RutaCrc, file.DirectoryName);
                         ArchivosLocales.Add(archivo);
                     }
                 }
@@ -66,7 +66,7 @@ namespace Launcher
             {
                 Informacion.Error += $"Error al obtener informacion local: {eLocal.Message}" + Environment.NewLine;
             }
-            if(Informacion.EjecutarInfo.ActualizarAutomaticamente)
+            if (Informacion.EjecutarInfo.ActualizarAutomaticamente)
             {
                 VerificarIntegridadYDescargar();
             }
@@ -77,7 +77,7 @@ namespace Launcher
             bool validacionCrc = false;
             foreach (var file in ArchivosRemotos)
             {
-                if(!file.VerificarIntegridad())
+                if (!file.VerificarIntegridad())
                 {
                     validacionCrc = false;
                     break;
@@ -95,12 +95,12 @@ namespace Launcher
             foreach (var archivoRemoto in ArchivosRemotos)
             {
                 //Si el crc del archivo local no se encuentra entre los remotos
-                var crcExiste = ArchivosLocales.Any(l => l.Checksum == archivoRemoto.Checksum && l.RutaLocal==archivoRemoto.RutaLocal);
+                var crcExiste = ArchivosLocales.Any(l => l.Checksum == archivoRemoto.Checksum && l.RutaLocal == archivoRemoto.RutaLocal);
                 if (!crcExiste)
                 {
                     archivoRemoto.Descargar();
                     Informacion.ArchivosDescargados++;
-                }             
+                }
                 Informacion.ArchivosPendientes--;
                 try
                 {
@@ -113,7 +113,7 @@ namespace Launcher
                     Informacion.Error += "Los archivos ya estan actualizados, no es necesario descargarlos.";
                 }
             }
-            if(Informacion.EjecutarInfo.EjecucionAutomaticaAlActualizar)
+            if (Informacion.EjecutarInfo.EjecucionAutomaticaAlActualizar)
             {
                 Ejecutar();
             }
@@ -128,13 +128,28 @@ namespace Launcher
         {
             try
             {
-                if(Informacion.EjecutarInfo.VerificarIntegridadAlEjecutar)
+                if (Informacion.EjecutarInfo.VerificarIntegridadAlEjecutar)
+                {
+                    Informacion.EjecutarInfo.VerificarIntegridadAlEjecutar = false;
+                    VerificarIntegridadYDescargar();
+                }
+                if (Informacion.EjecutarInfo.DetenerEjecucionAlVerificarIntegridad)
                 {
                     Informacion.Actualizado = VerificarIntegridad();
-                }
-                if (Informacion.EjecutarInfo.DetenerEjecucionAlVerificarIntegridad && Informacion.Actualizado == false)
-                {
-                    Informacion.Error = "Verificacion CRC no concuerda";
+                    if (Informacion.Actualizado)
+                    {
+                        ProcessStartInfo info = new ProcessStartInfo();
+                        info.CreateNoWindow = true;
+                        info.FileName = Informacion.EjecutableMain;
+                        info.Arguments = String.IsNullOrEmpty(Informacion.EjecutarInfo.Argumentos) ? "" : Informacion.EjecutarInfo.Argumentos;
+                        info.UseShellExecute = false;
+                        Process.Start(info);
+                    }
+                    else
+                    {
+                        Informacion.Error = "Verificacion CRC no concuerda";
+                    }
+
                 }
                 else
                 {
@@ -146,7 +161,7 @@ namespace Launcher
                     Process.Start(info);
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Informacion.Error = e.Message;
             }

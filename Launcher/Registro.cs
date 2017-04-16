@@ -6,15 +6,14 @@ using System.Text;
 
 namespace Launcher
 {
-    public class Registro
+    public static class Registro
     {
         public enum ClavesRaiz
         {
             HKEY_LOCAL_MACHINE, HKEY_CURRENT_CONFIG, HKEY_CLASSES_ROOT, HKEY_CURRENT_USER, HKEY_USERS, HKEY_PERFORMANCE_DATA
         }
-        public string Ruta { get; set; }
 
-        public void CrearClaveDeRegistro(ClavesRaiz clave, string path, string nombreRegistro, object contenido, RegistryValueKind tipoRegistro)
+        public static void CrearClaveDeRegistro(ClavesRaiz clave, string path, string nombreRegistro, object contenido, RegistryValueKind tipoRegistro)
         {
             RegistryKey rk;
             try
