@@ -14,7 +14,7 @@ namespace Launcher
         public List<Archivo> ArchivosRemotos { get; set; } = new List<Archivo>();
         public Uri RutaCrc { get; }
         private string CurrentDirectory { get; set; }
-        private FileInfo[] Files { get; set; }
+        private List<FileInfo> Files { get; set; }
         public Launcher(string ejecutable, string rutaCrc, bool customs)
         {
             Customs = customs;
@@ -166,9 +166,9 @@ namespace Launcher
 
         private void ObtenerArchivosLocales()
         {
-            Files = null;
+            Files.Clear();
             DirectoryInfo dir = new DirectoryInfo(".");
-            Files = dir.GetFiles("*.*", SearchOption.AllDirectories);
+            Files = dir.GetFiles("*.*", SearchOption.AllDirectories).ToList();
             foreach (FileInfo file in Files)
             {
                 if (!file.Name.Equals("BasicLauncher.exe"))
