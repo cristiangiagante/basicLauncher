@@ -14,7 +14,8 @@ namespace Launcher
         public List<Archivo> ArchivosRemotos { get; set; } = new List<Archivo>();
         public Uri RutaCrc { get; }
         private string CurrentDirectory { get; set; }
-        private List<FileInfo> Files { get; set; }
+        private List<FileInfo> Files { get; set; } = new List<FileInfo>();
+        private bool flagUpdated { get; set; } = false;
         public Launcher(string ejecutable, string rutaCrc, bool customs)
         {
             Customs = customs;
@@ -47,14 +48,6 @@ namespace Launcher
                 Informacion.Error += $"Error al obtener informacion remota: {eRemoto.Message}" + Environment.NewLine;
             }
 
-            try
-            {//Local
-                ObtenerArchivosLocales();
-            }
-            catch (Exception eLocal)
-            {
-                Informacion.Error += $"Error al obtener informacion local: {eLocal.Message}" + Environment.NewLine;
-            }
             if (Informacion.EjecutarInfo.ActualizarAutomaticamente)
             {
                 VerificarIntegridadYDescargar();
@@ -112,7 +105,13 @@ namespace Launcher
             }
             if (Informacion.EjecutarInfo.EjecucionAutomaticaAlActualizar)
             {
-                Ejecutar();
+                Informacion.EjecutarInfo.EjecucionAutomaticaAlActualizar = false;
+                ProcessStartInfo info = new ProcessStartInfo();
+                info.CreateNoWindow = true;
+                info.FileName = Informacion.EjecutableMain;
+                info.Arguments = String.IsNullOrEmpty(Informacion.EjecutarInfo.Argumentos) ? "" : Informacion.EjecutarInfo.Argumentos;
+                info.UseShellExecute = false;
+                Process.Start(info);
             }
         }
 
@@ -127,7 +126,6 @@ namespace Launcher
             {
                 if (Informacion.EjecutarInfo.VerificarIntegridadAlEjecutar)
                 {
-                    Informacion.EjecutarInfo.VerificarIntegridadAlEjecutar = false;
                     VerificarIntegridadYDescargar();
                 }
                 if (Informacion.EjecutarInfo.DetenerEjecucionAlVerificarIntegridad)
@@ -148,7 +146,7 @@ namespace Launcher
                     }
 
                 }
-                else if(!Informacion.EjecutarInfo.EjecucionAutomaticaAlActualizar)
+                else
                 {
                     ProcessStartInfo info = new ProcessStartInfo();
                     info.CreateNoWindow = true;
