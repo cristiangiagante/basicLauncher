@@ -14,7 +14,7 @@ namespace Launcher
         public List<Archivo> ArchivosRemotos { get; set; } = new List<Archivo>();
         public Uri RutaCrc { get; }
         private string CurrentDirectory { get; set; }
-
+        private FileInfo[] Files { get; set; }
         public Launcher(string ejecutable, string rutaCrc, bool customs)
         {
             Customs = customs;
@@ -23,8 +23,6 @@ namespace Launcher
             var rutaCrcUri = new Uri(rutaCrc); //Convierto a URI
             Informacion.RutaCrc = rutaCrcUri;
             RutaCrc = rutaCrcUri;
-            DirectoryInfo dir = new DirectoryInfo(".");
-            var files = dir.GetFiles("*.*", SearchOption.AllDirectories);
             WebClient br = new WebClient();
             var contenidoCrc = br.DownloadString(RutaCrc);
             br.Dispose();
@@ -51,16 +49,7 @@ namespace Launcher
 
             try
             {//Local
-
-                foreach (FileInfo file in files)
-                {
-                    if (!file.Name.Equals("BasicLauncher.exe"))
-                    {
-                        var rutaRelativa = file.DirectoryName.Replace(CurrentDirectory, ".");
-                        var archivo = new Archivo(file.Name, rutaRelativa + @"\", file.Length, RutaCrc, file.DirectoryName);
-                        ArchivosLocales.Add(archivo);
-                    }
-                }
+                ObtenerArchivosLocales();
             }
             catch (Exception eLocal)
             {
@@ -92,6 +81,14 @@ namespace Launcher
 
         public void VerificarIntegridadYDescargar()
         {
+            try
+            {//Reseteo los archivos locales y los evaluo nuevamente para comparar con los remotos
+                ObtenerArchivosLocales();
+            }
+            catch (Exception eLocal)
+            {
+                Informacion.Error += $"Error al obtener informacion local: {eLocal.Message}" + Environment.NewLine;
+            }
             foreach (var archivoRemoto in ArchivosRemotos)
             {
                 //Si el crc del archivo local no se encuentra entre los remotos
@@ -151,7 +148,7 @@ namespace Launcher
                     }
 
                 }
-                else
+                else if(!Informacion.EjecutarInfo.EjecucionAutomaticaAlActualizar)
                 {
                     ProcessStartInfo info = new ProcessStartInfo();
                     info.CreateNoWindow = true;
@@ -164,6 +161,22 @@ namespace Launcher
             catch (Exception e)
             {
                 Informacion.Error = e.Message;
+            }
+        }
+
+        private void ObtenerArchivosLocales()
+        {
+            Files = null;
+            DirectoryInfo dir = new DirectoryInfo(".");
+            Files = dir.GetFiles("*.*", SearchOption.AllDirectories);
+            foreach (FileInfo file in Files)
+            {
+                if (!file.Name.Equals("BasicLauncher.exe"))
+                {
+                    var rutaRelativa = file.DirectoryName.Replace(CurrentDirectory, ".");
+                    var archivo = new Archivo(file.Name, rutaRelativa + @"\", file.Length, RutaCrc, file.DirectoryName);
+                    ArchivosLocales.Add(archivo);
+                }
             }
         }
     }

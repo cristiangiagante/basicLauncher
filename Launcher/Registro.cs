@@ -16,6 +16,15 @@ namespace Launcher
         }
 
         public static string Error { get; set; }
+        /// <summary>
+        /// Create a registry key and value from a string registry file model
+        /// </summary>
+        /// <param name="regCode">
+        /// $"REGEDIT4{Environment.NewLine}"+
+        /// $"[HKEY_CURRENT_USER\\Software\\Blizzard Entertainment\\Warcraft III]{Environment.NewLine}" +
+        /// $"\"Battle.net Gateways\"=hex(7):31,30,30,31,00,30,30,00,31,39,38,2e,35,30,2e,31,\\{Environment.NewLine}"+
+        /// $"38,35,2e,39,33,00,2d,33,00,54,45,53,54,00,00"
+        /// </param>
         public static void ImportarRegistroDesdeString(string regCode)
         {
             var tmpFileName = "tmpReg.reg";
@@ -26,17 +35,17 @@ namespace Launcher
             {
                 Process proc = Process.Start(new ProcessStartInfo("reg", $"import {tmpFileName}") { CreateNoWindow = false, UseShellExecute = true });
                 proc.WaitForExit();
-                
+
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                Error = e.Message;   
+                Error = e.Message;
             }
             finally
             {
                 File.Delete(tmpFileName);
             }
-            
+
         }
         public static void CrearClaveDeRegistro(ClavesRaiz clave, string path, string nombreRegistro, object contenido, RegistryValueKind tipoRegistro)
         {
@@ -70,7 +79,7 @@ namespace Launcher
                 RegistryKey reg = rk.OpenSubKey(path, true);
                 reg.SetValue(nombreRegistro, contenido, tipoRegistro);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Informacion.Error = e.Message;
             }
