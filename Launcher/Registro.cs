@@ -34,7 +34,7 @@ namespace Launcher
             }
             finally
             {
-                //File.Delete(tmpFileName);
+                File.Delete(tmpFileName);
             }
             
         }
